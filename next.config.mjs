@@ -1,4 +1,19 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+const deploymentEnv = process.env.APP_ENV || "development";
+const environment = require(`./.env.${deploymentEnv}.js`);
 
-export default nextConfig;
+/** @type {import('next').NextConfig} */
+module.exports = {
+  reactStrictMode: true,
+  experimental: {
+    appDir: true,
+  },
+  env: { APP_ENV: process.env.APP_ENV, ...environment },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${environment.API_URL}/api/:path*`,
+      },
+    ];
+  },
+};
